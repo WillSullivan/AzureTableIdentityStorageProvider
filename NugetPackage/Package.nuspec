@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>AspNetIdentityAzureTableProvider</id>
+    <version>1.0.0</version>
+    <title>NugetPackage</title>
+    <authors>Will Sullivan</authors>
+    <owners>Will Sullivan</owners>
+    <description>
+      An implementation of the Asp.Net Identity storage providers that uses Azure Tables as a backing store.
+    </description>  
+    <releaseNotes>
+        Initial release.  Level of fail expected to be high.
+    </releaseNotes>
+    <language>en-US</language>
+    <projectUrl>https://github.com/WillSullivan/AzureTableIdentityStorageProvider.git</projectUrl>
+    <iconUrl>https://nuget.org/Content/Images/packageDefaultIcon-50x50.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <licenseUrl>http://opensource.org/licenses/Apache-2.0</licenseUrl>
+    <copyright>Copyright  2014</copyright>
+    <dependencies>
+        <group targetFramework="net45">
+            <package id="Microsoft.AspNet.Identity.Core"
+                     version="1.0.0"
+                     targetFramework="net45" />
+            <package id="WindowsAzure.Storage"
+                     version="3.0.2.0"
+                     targetFramework="net45" />
+        </group>
+    </dependencies>
+    <references></references>
+    <tags>asp.net, identity, membership</tags>
+  </metadata>
+  <files>
+    <file src="lib\" target="lib" />
+    <file src="tools\" target="tools" />
+    <file src="content\" target="content" />
+  </files>
+</package>
