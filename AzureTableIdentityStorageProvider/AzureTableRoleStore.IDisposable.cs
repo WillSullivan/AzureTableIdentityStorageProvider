@@ -40,6 +40,7 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         /// When called from the finalizer, it is only safe to dispose of unmanaged objects.
         /// This method should expect to be called multiple times without causing an exception.
         /// </remarks>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1816:CallGCSuppressFinalizeCorrectly", Justification="It is, derp.")]
         protected virtual void Dispose(bool fromUser)
         {
             if (fromUser)	// Called from user code rather than the garbage collector
@@ -53,12 +54,6 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
                 {
                     DisposeManagedResources();
                     GC.SuppressFinalize(this);	// No need for the Finalizer to do all this again.
-                }
-                catch (Exception)
-                {
-                    //ToDo: Handle any exceptions, for example produce diagnostic trace output.
-                    //Diagnostics.TraceError("Error when disposing.");
-                    //Diagnostics.TraceError(ex);
                 }
                 finally
                 {
@@ -87,6 +82,7 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         /// <summary>
         /// Dispose of all resources (both managed and unmanaged) used by this class.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1816:CallGCSuppressFinalizeCorrectly", Justification="It will.  Derp.")]
         public void Dispose()
         {
             // Call our private Dispose method, indicating that the call originated from user code.
@@ -96,7 +92,7 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
 
         /// <summary>
         /// Destructor, called by the finalizer during garbage collection.
-        /// There is no guarantee that this method will be called. For example, if <see cref="Dispose"/> has already
+        /// There is no guarantee that this method will be called. For example, if <see cref="Dispose()"/> has already
         /// been called in user code for this object, then finalization may have been suppressed.
         /// </summary>
         ~AzureTableRoleStore()

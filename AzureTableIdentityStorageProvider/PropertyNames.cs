@@ -9,14 +9,14 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
     /// <summary>
     /// Property names used in table queries.
     /// </summary>
-    internal sealed class PropertyNames
+    internal static class PropertyNames
     {
         /// <summary>
-        /// The name of the <see cref="TableEntity.PartitionKey"/> property.
+        /// The name of the <see cref="Microsoft.WindowsAzure.Storage.Table.TableEntity.PartitionKey"/> property.
         /// </summary>
         public const string PartitionKey = "PartitionKey";
         /// <summary>
-        /// The name of the <see cref="TableEntity.RowKey"/> property.
+        /// The name of the <see cref="Microsoft.WindowsAzure.Storage.Table.TableEntity.RowKey"/> property.
         /// </summary>
         public const string RowKey = "RowKey";
         /// <summary>
@@ -32,7 +32,7 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         /// </summary>
         public const string UserName = "UserName";
         /// <summary>
-        /// The name of the <see cref="AzureTableRoler.Name"/> property.
+        /// The name of the <see cref="AzureTableRole.Name"/> property.
         /// </summary>
         public const string Name = "Name";
     }

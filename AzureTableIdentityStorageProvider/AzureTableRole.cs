@@ -31,7 +31,7 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         /// <summary>
         /// The Id of the role
         /// </summary>
-        /// <remarks>Ids should be unique.  The Id is also used as the <see cref="RowKey"/>.</remarks>
+        /// <remarks>Ids should be unique.  The Id is also used as the <see cref="Microsoft.WindowsAzure.Storage.Table.TableEntity.RowKey"/>.</remarks>
         /// <exception cref="ArgumentException">Thrown if <paramref name="value"/> is <c>null</c>, empty, or consists only of whitespace.</exception>
         public string Id
         {

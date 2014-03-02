@@ -15,7 +15,7 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
     /// <remarks>Other parts of ASP.NET Identity rely upon interfaces to define their contract with users.  Unfortunately,
     /// claims are stored using the <see cref="System.Security.Claims.Claim"/> class, which does not inherit from the necessary
     /// <see cref="Microsoft.WindowsAzure.Storage.Table.TableEntity"/> base class.  Therefore, in order to store user claims within
-    /// Azure Tables, we must map back and forth between these models.</remarks>
+    /// Azure Tables, we must map back and forth between these models.</remarks>    
     public class AzureTableClaim : Microsoft.WindowsAzure.Storage.Table.TableEntity
     {
         /// <summary>
@@ -31,6 +31,7 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         /// <summary>
         /// The type of claim (see <see cref="Claim.Type"/>) 
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1721:PropertyNamesShouldNotMatchGetMethods", Justification="Matching the property name from Claims")]
         public string Type { get; set; }
 
         /// <summary>

@@ -18,8 +18,6 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         /// </summary>
         public const string DefaultAspNetUserPartitionKey = "AspNetUserPartition";
 
-        private string _userName;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="AzureTableUser" /> class.
         /// </summary>
@@ -33,7 +31,7 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         /// <summary>
         /// Unique key for the user
         /// </summary>
-        /// <remarks>the Id is also used as the <see cref="RowKey"/>.</remarks>
+        /// <remarks>the Id is also used as the <see cref="Microsoft.WindowsAzure.Storage.Table.TableEntity.RowKey"/>.</remarks>
         /// <exception cref="ArgumentException">Thrown if <paramref name="value"/> is <c>null</c> or empty.</exception>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="value"/> is <c>null</c>.</exception>
         public virtual string Id
@@ -54,6 +52,11 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         /// </summary>
         /// <value>The name of the user.</value>
         public virtual string UserName { get; set; }
+
+        /// <summary>
+        /// A hash of the user's password.
+        /// </summary>
+        public virtual string PasswordHash { get; set; }
 
         #endregion
     }

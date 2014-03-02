@@ -14,10 +14,10 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         IUserRoleStore<AzureTableUser>
     {
         #region props
-        private readonly Func<AzureTableUser, string> _defaultMapUserToUserRolePartitionKey = x => AzureTableUserRoles.DefaultAzuretableUserRolesPartitionKey;
+        private readonly Func<AzureTableUser, string> _defaultMapUserToUserRolePartitionKey = x => AzureTableUserRoles.DefaultAzureTableUserRolesPartitionKey;
 
-        /// <summary><typeparamref name="T"/>
-        /// Maps an <typeparamref name="T"/> to a partition key for user role data.
+        /// <summary>
+        /// Maps a <see cref="AzureTableUser"/> to a partition key for user role data.
         /// </summary>
         protected virtual Func<AzureTableUser, string> MapUserToUserRolePartitionKey
         {
@@ -45,7 +45,7 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         /// <summary>
         /// Adds the given <paramref name="role"/> to the given <paramref name="user"/>.
         /// </summary>
-        /// <param name="user"><typeparamref name="T"/></param>
+        /// <param name="user"><see cref="AzureTableUser"/></param>
         /// <param name="role">The role to add.</param>
         /// <returns><see cref="Task"/></returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="user"/> is <c>null</c>.</exception>
@@ -73,7 +73,7 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         /// <summary>
         /// Gets all roles for the given <paramref name="user"/>.
         /// </summary>
-        /// <param name="user"><typeparamref name="T"/></param>
+        /// <param name="user"><see cref="AzureTableUser"/></param>
         /// <returns>A <see cref="Task{T}"/> that returns an <see cref="IList{T}"/> of role names for the user.</returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="user"/> is <c>null</c>.</exception>
         /// <see cref="AzureTableUserException">Thrown whenever a table operation results in a <see cref="StorageException"/> being thrown.</see>
@@ -96,7 +96,7 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         /// <summary>
         /// Checks if the given <paramref name="user"/> is a member of the given <paramref name="role"/>.
         /// </summary>
-        /// <param name="user"><typeparamref name="T"/></param>
+        /// <param name="user"><see cref="AzureTableUser"/></param>
         /// <param name="role">The role to check for.</param>
         /// <returns><c>True</c> if the <paramref name="user"/> is a member of the given <paramref name="role"/>.</returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="user"/> is <c>null</c>.</exception>
@@ -123,7 +123,7 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         /// <summary>
         /// Removes the given <paramref name="user"/> is in the given <paramref name="role"/>.
         /// </summary>
-        /// <param name="user"><typeparamref name="T"/></param>
+        /// <param name="user"><see cref="AzureTableUser"/></param>
         /// <param name="role">The role to check</param>
         /// <returns><c>True</c> if the given <paramref name="user"/> is in the given <paramref name="role"/>, and <c>false</c> otherwise.</returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="user"/> is <c>null</c>.</exception>
@@ -153,7 +153,7 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         /// <summary>
         /// Gets the user role partition key without the risk of NREs
         /// </summary>
-        /// <param name="user"><see cref="v"/></param>
+        /// <param name="user"><see cref="AzureTableUser"/></param>
         /// <returns>The user role partition key</returns>
         private string SafeGetUserRolePartitionKey(AzureTableUser user)
         {
@@ -174,7 +174,7 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         }
 
         /// <summary>
-        /// Gets the <see cref="AzuretableUserRoles"/> for the given <paramref name="user"/>.
+        /// Gets the <see cref="AzureTableUserRoles"/> for the given <paramref name="user"/>.
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>

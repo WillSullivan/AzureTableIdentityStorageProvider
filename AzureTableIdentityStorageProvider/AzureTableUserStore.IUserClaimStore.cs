@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
@@ -15,11 +16,11 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
     {
         #region consts
         /// <summary>
-        /// The key in <see cref="Claim.Properties"/> that stores the <see cref="AzureTableClaim.PartitionKey"/> of a <see cref="Claim">Claim's</see> storage model.
+        /// The key in <see cref="Claim.Properties"/> that stores the <see cref="Microsoft.WindowsAzure.Storage.Table.TableEntity.PartitionKey"/> of a <see cref="Claim">Claim's</see> storage model.
         /// </summary>
         public const string ClaimsPartitionKeyPropertyKey = "ClaimsPartitionKey";
         /// <summary>
-        /// The key in <see cref="Claim.Properties"/> that stores the <see cref="AzureTableClaim.RowKey"/> of a <see cref="Claim">Claim's</see> storage model.
+        /// The key in <see cref="Claim.Properties"/> that stores the <see cref="Microsoft.WindowsAzure.Storage.Table.TableEntity.RowKey"/> of a <see cref="Claim">Claim's</see> storage model.
         /// </summary>
         public const string ClaimsRowKeyPropertyKey = "ClaimsRowKey";
         #endregion
@@ -38,7 +39,7 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         // The partition is scoped to the user.  Not sure if this is a good idea.
         private Func<AzureTableUser, string> _defaultGetClaimsPartitionKey = atu => atu.RowKey + "Claims";
         // Not even sure if issuer, type and value are adequate to identify a user's claim
-        private Func<AzureTableUser, Claim, string> _defaultGetClaimsRowKey = (atu, claim) => atu.RowKey + (claim.Issuer.GetHashCode() ^ claim.Type.GetHashCode() ^ claim.Value.GetHashCode()).ToString();
+        private Func<AzureTableUser, Claim, string> _defaultGetClaimsRowKey = (atu, claim) => atu.RowKey + (claim.Issuer.GetHashCode() ^ claim.Type.GetHashCode() ^ claim.Value.GetHashCode()).ToString(CultureInfo.InvariantCulture);
         #endregion
 
         #region props
@@ -154,7 +155,7 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
                 await Run(TableOperation.Insert(dclaim));
             }
             catch (StorageException ex)
-            {              
+            {
                 if (ex.RequestInformation.HttpStatusCode == (int)HttpStatusCode.Conflict)
                     throw new AzureTableUserException("The claim already exists", ex);
                 throw new AzureTableUserException("An exception was thrown while attempting to add this claim.  See the inner exception for details.", ex);

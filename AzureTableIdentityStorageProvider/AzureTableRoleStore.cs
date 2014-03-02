@@ -15,11 +15,11 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
     {
         #region props
         /// <summary>
-        /// The name of the <see cref="AzureTableRole.PartitionKey"/> property.
+        /// The name of the <see cref="Microsoft.WindowsAzure.Storage.Table.TableEntity.PartitionKey"/> property.
         /// </summary>
         protected const string PartitionKey = "PartitionKey";
         /// <summary>
-        /// The name of the <see cref="AzureTableRole.RowKey"/> property.
+        /// The name of the <see cref="Microsoft.WindowsAzure.Storage.Table.TableEntity.RowKey"/> property.
         /// </summary>
         protected const string RowKey = "RowKey";
         /// <summary>

@@ -14,7 +14,7 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
     /// <summary>
     /// A user store that uses Azure Table Storage as a backing store for ASP.NET Identity.
     /// </summary>
-    /// <remarks>This class implements <see cref="IUserPasswordStore{T}"/>, <see cref="IUserUserStore{T}"/>, <see cref="IUserLoginStore{T}"/>, <see cref="IUserClaimStore{T}"/> and <see cref="IUserStore{T}"/>.
+    /// <remarks>This class implements <see cref="IUserPasswordStore{T}"/>, <see cref="IUserRoleStore{T}"/>, <see cref="IUserLoginStore{T}"/>, <see cref="IUserClaimStore{T}"/> and <see cref="IUserStore{T}"/>.
     /// The base class that implements <see cref="IUser"/> which is referenced by this implementation is <see cref="AzureTableUser"/>.
     /// 
     /// This pattern may seem a little odd, but it adds a level of convenience as all interfaces also implement <see cref="IUserStore{T}"/>.</remarks>
@@ -22,6 +22,9 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         AzureTableStore,
         IUserStore<AzureTableUser>
     {
+        /// <summary>
+        /// The default table name used for the AzureTableUserStore.
+        /// </summary>
         public const string DefaultTableName = "AspNetIdentityUserStore";
 
         #region Props
@@ -129,7 +132,7 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         }
 
         /// <summary>
-        /// Finds a <see cref="AuzreTableUser"/> by that user's <see cref="AzuretableUser.Id">Id</see>.
+        /// Finds a <see cref="AzureTableUser"/> by that user's <see cref="AzureTableUser.Id">Id</see>.
         /// </summary>
         /// <param name="userId">The user's Id</param>
         /// <returns>A <see cref="Task{T}"/> that returns the <see cref="AzureTableUser"/> if found, or <c>null</c> if not found.</returns>
@@ -153,7 +156,7 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         }
 
         /// <summary>
-        /// Finds a <see cref="AuzreTableUser"/> by that user's <see cref="AzuretableUser.Name">name</see>.
+        /// Finds a <see cref="AzureTableUser"/> by that user's <see cref="AzureTableUser.UserName">name</see>.
         /// </summary>
         /// <param name="userName">The name of the user to find.</param>
         /// <returns>A <see cref="Task{T}"/> that returns the <see cref="AzureTableUser"/> if found, or <c>null</c> if not found.</returns>

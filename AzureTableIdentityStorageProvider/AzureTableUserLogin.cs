@@ -32,7 +32,7 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         /// <summary>
         /// The provider's key for this <see cref="UserId">user</see>.
         /// </summary>
-        /// <remarks>The provider key is used as the <see cref="TableIdentity.RowKey"/>.</remarks>
+        /// <remarks>The provider key is used as the <see cref="Microsoft.WindowsAzure.Storage.Table.TableEntity.RowKey"/>.</remarks>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="value"/> is <c>null</c>.</exception>
         public string ProviderKey
         {

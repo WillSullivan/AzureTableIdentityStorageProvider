@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>StateStreetGang.AspNet.Identity.AzureTable</RootNamespace>
     <AssemblyName>AzureTableIdentityStorageProvider</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
@@ -25,13 +25,18 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
+    <DebugType>full</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <DocumentationFile>bin\Release\AzureTableIdentityStorageProvider.XML</DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.AspNet.Identity.Core">
@@ -84,6 +89,9 @@
     <Compile Include="AzureTableUserStore.IUserLoginStore.cs">
       <DependentUpon>AzureTableUserStore.cs</DependentUpon>
     </Compile>
+    <Compile Include="AzureTableUserStore.IUserPasswordStore.cs">
+      <DependentUpon>AzureTableUserStore.cs</DependentUpon>
+    </Compile>
     <Compile Include="AzureTableUserStore.IUserRoleStore.cs">
       <DependentUpon>AzureTableUserStore.cs</DependentUpon>
     </Compile>
@@ -91,6 +99,7 @@
       <DependentUpon>AzureTableUserStore.cs</DependentUpon>
     </Compile>
     <Compile Include="AzureTableUserStore.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="PropertyNames.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">

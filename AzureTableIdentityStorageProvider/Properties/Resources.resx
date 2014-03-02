@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="ConnectionStringNOW" xml:space="preserve">
-    <value>connectionString cannot be null, empty, or consist of whitespace.</value>
+    <value>connectionString cannot be null, empty, or consist of white space.</value>
   </data>
   <data name="InvalidConnectionString" xml:space="preserve">
     <value>The connection string is invalid.  See the inner exception for details.", "connectionString</value>
