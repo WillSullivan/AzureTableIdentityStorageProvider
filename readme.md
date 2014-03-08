@@ -9,12 +9,8 @@ This is still in early development, so don't expect it to work perfectly.  I'll 
 ##Version history
 (Version histories are the file version, which matches the major/minor for the assembly version)  
 
-* 1.0 Initial checkin
+* 1.0: Initial checkin
 
 ##Currently missing/failing/FYI
-* project documentation (internal and external docs exist, I'm talking about wiki and this doc) (also, major asshole move to not document your code, bro)
-* Unit tests for IUserClaimStore, IUserLoginStore
-* Nuget package
+* project documentation on Github
 * Actually use this damn code in an application, I'm cereal. This is all hypothetical, tests not withstanding.
-
-***Send me some pull requests!***

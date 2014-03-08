@@ -43,8 +43,14 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         /// <param name="user"><see cref="AzureTableUser"/></param>
         /// <param name="passwordHash">The password hash.</param>
         /// <returns><see cref="Task"/></returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="passwordHash"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown if <paramref name="passwordHash"/> is empty or consists solely of whitespace.</exception>
         public async Task SetPasswordHashAsync(AzureTableUser user, string passwordHash)
         {
+            if (passwordHash == null)
+                throw new ArgumentNullException("passwordHash");
+            if (string.IsNullOrWhiteSpace(passwordHash))
+                throw new ArgumentException("passwordHash cannot be null, empty, or consist of whitespace.");
             user.PasswordHash = passwordHash;
             user.EnsureETagSet();
             await UpdateAsync(user);

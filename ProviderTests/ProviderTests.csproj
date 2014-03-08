@@ -81,6 +81,11 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="AzureTableUserStore.IUserClaimStoreTests.cs" />
+    <Compile Include="AzureTableUserStore.IUserLoginStoreTests.cs" />
+    <Compile Include="AzureTableUserStore.IUserPasswordStoreTests.cs" />
+    <Compile Include="AzureTableUserStore.IUserRoleStoreTests.cs" />
+    <Compile Include="AzureTableUserStoreTestBase.cs" />
     <Compile Include="AzureTableUserStoreTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">

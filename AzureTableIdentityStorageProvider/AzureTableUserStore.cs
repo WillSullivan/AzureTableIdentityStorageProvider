@@ -94,7 +94,7 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
             if (user == null)
                 throw new ArgumentNullException("user");
             try
-            {
+            {                
                 var result = await Run(TableOperation.Insert(user));
                 user.ETag = result.Etag;
             }
