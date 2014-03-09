@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureTableIdentityStoragePr
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1ADA9E26-AE03-4779-9102-40579E4D2A56}"
 	ProjectSection(SolutionItems) = preProject
-		AspNetIdentityAzureTableProvider.1.0.nupkg = AspNetIdentityAzureTableProvider.1.0.nupkg
+		AspNetIdentityAzureTableProvider.nupkg = AspNetIdentityAzureTableProvider.nupkg
 		readme.md = readme.md
 	EndProjectSection
 EndProject

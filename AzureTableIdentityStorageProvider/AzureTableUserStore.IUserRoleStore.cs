@@ -9,17 +9,17 @@ using Microsoft.WindowsAzure.Storage.Table;
 
 namespace StateStreetGang.AspNet.Identity.AzureTable
 {
-    // Implementation details for IUserRoleStore<AzureTableUser>
-    public partial class AzureTableUserStore :
-        IUserRoleStore<AzureTableUser>
+    // Implementation details for IUserRoleStore<T>
+    public partial class AzureTableUserStore<T> :
+        IUserRoleStore<T>
     {
         #region props
-        private readonly Func<AzureTableUser, string> _defaultMapUserToUserRolePartitionKey = x => AzureTableUserRoles.DefaultAzureTableUserRolesPartitionKey;
+        private readonly Func<T, string> _defaultMapUserToUserRolePartitionKey = x => AzureTableUserRoles.DefaultAzureTableUserRolesPartitionKey;
 
         /// <summary>
-        /// Maps a <see cref="AzureTableUser"/> to a partition key for user role data.
+        /// Maps a A <see cref="AzureTableUser"/>-derived type to a partition key for user role data.
         /// </summary>
-        protected virtual Func<AzureTableUser, string> MapUserToUserRolePartitionKey
+        protected virtual Func<T, string> MapUserToUserRolePartitionKey
         {
             get
             {
@@ -40,19 +40,19 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         }
         #endregion
 
-        #region IUserRoleStore<AzureTableUser> Members
+        #region IUserRoleStore<T> Members
 
         /// <summary>
         /// Adds the given <paramref name="role"/> to the given <paramref name="user"/>.
         /// </summary>
-        /// <param name="user"><see cref="AzureTableUser"/></param>
+        /// <param name="user">A <see cref="AzureTableUser"/>-derived type</param>
         /// <param name="role">The role to add.</param>
         /// <returns><see cref="Task"/></returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="user"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown if <paramref name="role"/> is empty or consists only of whitespace, or if the role contains the <see cref="UserRoleDelimiter"/> string.</exception>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="role"/> is <c>null</c>.</exception>
         /// <see cref="AzureTableUserException">Thrown whenever a table operation results in a <see cref="StorageException"/> being thrown.</see>
-        public virtual async Task AddToRoleAsync(AzureTableUser user, string role)
+        public virtual async Task AddToRoleAsync(T user, string role)
         {
             AssertNotDisposed();
             if (user == null)
@@ -73,11 +73,11 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         /// <summary>
         /// Gets all roles for the given <paramref name="user"/>.
         /// </summary>
-        /// <param name="user"><see cref="AzureTableUser"/></param>
+        /// <param name="user">A <see cref="AzureTableUser"/>-derived type</param>
         /// <returns>A <see cref="Task{T}"/> that returns an <see cref="IList{T}"/> of role names for the user.</returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="user"/> is <c>null</c>.</exception>
         /// <see cref="AzureTableUserException">Thrown whenever a table operation results in a <see cref="StorageException"/> being thrown.</see>
-        public virtual async Task<IList<string>> GetRolesAsync(AzureTableUser user)
+        public virtual async Task<IList<string>> GetRolesAsync(T user)
         {
             AssertNotDisposed();
             if (user == null)
@@ -96,13 +96,13 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         /// <summary>
         /// Checks if the given <paramref name="user"/> is a member of the given <paramref name="role"/>.
         /// </summary>
-        /// <param name="user"><see cref="AzureTableUser"/></param>
+        /// <param name="user">A <see cref="AzureTableUser"/>-derived type</param>
         /// <param name="role">The role to check for.</param>
         /// <returns><c>True</c> if the <paramref name="user"/> is a member of the given <paramref name="role"/>.</returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="user"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown if <paramref name="role"/> is <c>null</c> or empty.</exception>
         /// <see cref="AzureTableUserException">Thrown whenever a table operation results in a <see cref="StorageException"/> being thrown.</see>
-        public virtual async Task<bool> IsInRoleAsync(AzureTableUser user, string role)
+        public virtual async Task<bool> IsInRoleAsync(T user, string role)
         {
             AssertNotDisposed();
             if (user == null)
@@ -123,13 +123,13 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         /// <summary>
         /// Removes the given <paramref name="user"/> is in the given <paramref name="role"/>.
         /// </summary>
-        /// <param name="user"><see cref="AzureTableUser"/></param>
+        /// <param name="user">A <see cref="AzureTableUser"/>-derived type</param>
         /// <param name="role">The role to check</param>
         /// <returns><c>True</c> if the given <paramref name="user"/> is in the given <paramref name="role"/>, and <c>false</c> otherwise.</returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="user"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown if <paramref name="role"/> is <c>null</c> or empty.</exception>
         /// <see cref="AzureTableUserException">Thrown whenever a table operation results in a <see cref="StorageException"/> being thrown.</see>
-        public virtual async Task RemoveFromRoleAsync(AzureTableUser user, string role)
+        public virtual async Task RemoveFromRoleAsync(T user, string role)
         {
             AssertNotDisposed();
             if (user == null)
@@ -153,9 +153,9 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         /// <summary>
         /// Gets the user role partition key without the risk of NREs
         /// </summary>
-        /// <param name="user"><see cref="AzureTableUser"/></param>
+        /// <param name="user">A <see cref="AzureTableUser"/>-derived type</param>
         /// <returns>The user role partition key</returns>
-        private string SafeGetUserRolePartitionKey(AzureTableUser user)
+        private string SafeGetUserRolePartitionKey(T user)
         {
             return (MapUserToUserRolePartitionKey ?? _defaultMapUserToUserRolePartitionKey)(user);
         }
@@ -179,7 +179,7 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         /// <param name="user"></param>
         /// <returns></returns>
         /// <remarks>Performs null check on <paramref name="user"/>, and creates a new <see cref="AzureTableUserRoles"/> instance if one is not found for the user.</remarks>
-        private async Task<AzureTableUserRoles> GetRolesForUser(AzureTableUser user)
+        private async Task<AzureTableUserRoles> GetRolesForUser(T user)
         {
             if (user == null)
                 throw new ArgumentNullException("user");

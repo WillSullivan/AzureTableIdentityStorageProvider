@@ -9,7 +9,7 @@ using Microsoft.WindowsAzure.Storage.Table;
 
 namespace StateStreetGang.AspNet.Identity.AzureTable
 {
-    public partial class AzureTableUserStore : IUserLoginStore<AzureTableUser>
+    public partial class AzureTableUserStore<T> : IUserLoginStore<T>
     {
         #region props
         /// <summary>
@@ -22,17 +22,17 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
 
         #endregion
 
-        #region IUserLoginStore<AzureTableUser> Members
+        #region IUserLoginStore<T> Members
 
         /// <summary>
         /// Adds a new <paramref name="user"/> to the store asynchronously.
         /// </summary>
-        /// <param name="user"><see cref="AzureTableUser"/></param>
+        /// <param name="user">A A <see cref="AzureTableUser"/>-derived type-derived type</param>
         /// <param name="login"><see cref="UserLoginInfo"/></param>
         /// <returns><see cref="Task"/></returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="user"/> or <paramref name="login"/> is <c>null</c>.</exception>
         /// <see cref="AzureTableUserException">Thrown whenever a table operation results in a <see cref="StorageException"/> being thrown.</see>
-        public virtual async Task AddLoginAsync(AzureTableUser user, UserLoginInfo login)
+        public virtual async Task AddLoginAsync(T user, UserLoginInfo login)
         {
             AssertNotDisposed();
             if (user == null)
@@ -62,10 +62,10 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         /// Finds a user by their login.
         /// </summary>
         /// <param name="login"><see cref="UserLoginInfo"/></param>
-        /// <returns>A <see cref="Task{T}"/> that returns the <see cref="AzureTableUser"/> if found, or <c>null</c> otherwise.</returns>
+        /// <returns>A <see cref="Task{T}"/> that returns the A A <see cref="AzureTableUser"/>-derived type-derived type if found, or <c>null</c> otherwise.</returns>
         /// <see cref="AzureTableUserException">Thrown whenever a table operation results in a <see cref="StorageException"/> being thrown.</see>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="login"/> is <c>null</c>.</exception>
-        public virtual async Task<AzureTableUser> FindAsync(UserLoginInfo login)
+        public virtual async Task<T> FindAsync(UserLoginInfo login)
         {
             AssertNotDisposed();
             if (login == null)
@@ -89,11 +89,11 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         /// <summary>
         /// Finds all <see cref="UserLoginInfo">UserLoginInfos</see> associated with the given <paramref name="user"/>
         /// </summary>
-        /// <param name="user"><see cref="AzureTableUser"/></param>
+        /// <param name="user">A A <see cref="AzureTableUser"/>-derived type-derived type</param>
         /// <returns>A <see cref="Task{T}"/> that returns an <see cref="IList{T}"/> of <see cref="UserLoginInfo"/> instances for the <paramref name="user"/>.</returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="user"/> is <c>null</c>.</exception>
         /// <see cref="AzureTableUserException">Thrown whenever a table operation results in a <see cref="StorageException"/> being thrown.</see>
-        public virtual async Task<IList<UserLoginInfo>> GetLoginsAsync(AzureTableUser user)
+        public virtual async Task<IList<UserLoginInfo>> GetLoginsAsync(T user)
         {
             AssertNotDisposed();
             if (user == null)
@@ -118,12 +118,12 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         /// <summary>
         /// Removes the given <paramref name="login"/> for the given <paramref name="user"/>.
         /// </summary>
-        /// <param name="user"><see cref="AzureTableUser"/></param>
+        /// <param name="user">A A <see cref="AzureTableUser"/>-derived type-derived type</param>
         /// <param name="login"><see cref="UserLoginInfo"/></param>
         /// <returns><see cref="Task"/></returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="login"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="user"/> is <c>null</c>.</exception>
-        public async Task RemoveLoginAsync(AzureTableUser user, UserLoginInfo login)
+        public async Task RemoveLoginAsync(T user, UserLoginInfo login)
         {
             AssertNotDisposed();
             if (user == null)

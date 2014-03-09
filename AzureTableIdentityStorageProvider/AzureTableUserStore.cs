@@ -15,12 +15,12 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
     /// A user store that uses Azure Table Storage as a backing store for ASP.NET Identity.
     /// </summary>
     /// <remarks>This class implements <see cref="IUserPasswordStore{T}"/>, <see cref="IUserRoleStore{T}"/>, <see cref="IUserLoginStore{T}"/>, <see cref="IUserClaimStore{T}"/> and <see cref="IUserStore{T}"/>.
-    /// The base class that implements <see cref="IUser"/> which is referenced by this implementation is <see cref="AzureTableUser"/>.
+    /// The base class that implements <see cref="IUser"/> which is referenced by this implementation is A <see cref="AzureTableUser"/>-derived type.
     /// 
     /// This pattern may seem a little odd, but it adds a level of convenience as all interfaces also implement <see cref="IUserStore{T}"/>.</remarks>
-    public partial class AzureTableUserStore :
+    public partial class AzureTableUserStore<T> :
         AzureTableStore,
-        IUserStore<AzureTableUser>
+        IUserStore<T> where T : AzureTableUser, new()
     {
         /// <summary>
         /// The default table name used for the AzureTableUserStore.
@@ -85,10 +85,10 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         /// <summary>
         /// Creates the given <paramref name="user"/>.
         /// </summary>
-        /// <param name="user"><see cref="AzureTableUser"/></param>
+        /// <param name="user">A <see cref="AzureTableUser"/>-derived type</param>
         /// <returns><see cref="Task"/></returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="user"/> is <c>null</c>.</exception>
-        public virtual async Task CreateAsync(AzureTableUser user)
+        public virtual async Task CreateAsync(T user)
         {
             AssertNotDisposed();
             if (user == null)
@@ -109,10 +109,10 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         /// <summary>
         /// Deletes the given <paramref name="user"/>.
         /// </summary>
-        /// <param name="user"><see cref="AzureTableUser"/></param>
+        /// <param name="user">A <see cref="AzureTableUser"/>-derived type</param>
         /// <returns><see cref="Task"/></returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="user"/> is <c>null</c>.</exception>
-        public virtual async Task DeleteAsync(AzureTableUser user)
+        public virtual async Task DeleteAsync(T user)
         {
             AssertNotDisposed();
             if (user == null)
@@ -132,22 +132,22 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         }
 
         /// <summary>
-        /// Finds a <see cref="AzureTableUser"/> by that user's <see cref="AzureTableUser.Id">Id</see>.
+        /// Finds a A <see cref="AzureTableUser"/>-derived type by that user's <see cref="AzureTableUser.Id">Id</see>.
         /// </summary>
         /// <param name="userId">The user's Id</param>
-        /// <returns>A <see cref="Task{T}"/> that returns the <see cref="AzureTableUser"/> if found, or <c>null</c> if not found.</returns>
+        /// <returns>A <see cref="Task{T}"/> that returns the A <see cref="AzureTableUser"/>-derived type if found, or <c>null</c> if not found.</returns>
         /// <exception cref="ArgumentException">Thrown if <paramref name="userId"/> is <c>null</c> or empty.</exception>
-        public virtual async Task<AzureTableUser> FindByIdAsync(string userId)
+        public virtual async Task<T> FindByIdAsync(string userId)
         {
             AssertNotDisposed();
             if (string.IsNullOrWhiteSpace(userId))
                 throw new ArgumentException("userId cannot be null, empty, or consist of whitespace.");
             var table = await GetTable();
-            var query = TableOperation.Retrieve<AzureTableUser>(UserPartitionKey, userId);
+            var query = TableOperation.Retrieve<T>(UserPartitionKey, userId);
             var result = await table.ExecuteAsync(query);
             try
             {
-                return result.Result as AzureTableUser; 
+                return result.Result as T; 
             }
             catch (StorageException ex)
             {
@@ -156,18 +156,18 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         }
 
         /// <summary>
-        /// Finds a <see cref="AzureTableUser"/> by that user's <see cref="AzureTableUser.UserName">name</see>.
+        /// Finds a A <see cref="AzureTableUser"/>-derived type by that user's <see cref="AzureTableUser.UserName">name</see>.
         /// </summary>
         /// <param name="userName">The name of the user to find.</param>
-        /// <returns>A <see cref="Task{T}"/> that returns the <see cref="AzureTableUser"/> if found, or <c>null</c> if not found.</returns>
+        /// <returns>A <see cref="Task{T}"/> that returns the A <see cref="AzureTableUser"/>-derived type if found, or <c>null</c> if not found.</returns>
         /// <exception cref="ArgumentException">Thrown if <paramref name="userName"/> is <c>null</c> or empty.</exception>
-        public virtual async Task<AzureTableUser> FindByNameAsync(string userName)
+        public virtual async Task<T> FindByNameAsync(string userName)
         {
             AssertNotDisposed();
             if (string.IsNullOrWhiteSpace(userName))
                 throw new ArgumentException("userName cannot be null, empty, or consist of whitespace.");
             var table = await GetTable();
-            var userNameQuery = new TableQuery<AzureTableUser>().Where(
+            var userNameQuery = new TableQuery<T>().Where(
                 TableQuery.CombineFilters(
                     TableQuery.GenerateFilterCondition(PropertyNames.PartitionKey, QueryComparisons.Equal, UserPartitionKey),
                     TableOperators.And,
@@ -187,10 +187,10 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         /// <summary>
         /// Updates the given <paramref name="user"/> in the database.
         /// </summary>
-        /// <param name="user"><see cref="AzureTableUser"/></param>
+        /// <param name="user">A <see cref="AzureTableUser"/>-derived type</param>
         /// <returns><see cref="Task"/></returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="user"/> is <c>null</c>.</exception>
-        public virtual async Task UpdateAsync(AzureTableUser user)
+        public virtual async Task UpdateAsync(T user)
         {
             AssertNotDisposed();
             if (user == null)

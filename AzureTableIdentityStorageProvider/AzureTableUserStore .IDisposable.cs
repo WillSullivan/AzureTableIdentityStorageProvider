@@ -10,9 +10,8 @@ using Microsoft.WindowsAzure.Storage.Table;
 
 namespace StateStreetGang.AspNet.Identity.AzureTable
 {
-    public partial class AzureTableUserStore
+    public partial class AzureTableUserStore<T>
     {
-
         #region IDisposable pattern
         /// <summary>
         /// When <c>true</c>, this instance has been disposed

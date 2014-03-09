@@ -3,10 +3,10 @@ namespace ProviderTests
 {
     public abstract class AzureTableUserStoreTestBase
     {
-        protected AzureTableUserStore Target()
+        protected AzureTableUserStore<AzureTableUser> Target()
         {
-            UtilsLol.DeleteTableLol(AzureTableUserStore.DefaultTableName);
-            return new AzureTableUserStore(Properties.Settings.Default.TestTableConnectionString);
+            UtilsLol.DeleteTableLol(AzureTableUserStore<AzureTableUser>.DefaultTableName);
+            return new AzureTableUserStore<AzureTableUser>(Properties.Settings.Default.TestTableConnectionString);
         }
     }
 }

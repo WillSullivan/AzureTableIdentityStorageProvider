@@ -11,8 +11,8 @@ using Microsoft.WindowsAzure.Storage.Table;
 
 namespace StateStreetGang.AspNet.Identity.AzureTable
 {
-    public partial class AzureTableUserStore :
-        IUserClaimStore<AzureTableUser>
+    public partial class AzureTableUserStore<T> :
+        IUserClaimStore<T>
     {
         #region consts
         /// <summary>
@@ -27,7 +27,7 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
 
         #region privates
         // Goddamnit, framework.
-        private Func<AzureTableUser, Claim, AzureTableClaim> _defaultMapToStoreDomainFunc;
+        private Func<T, Claim, AzureTableClaim> _defaultMapToStoreDomainFunc;
         // storing the partition/row keys, but I never assume they exist, so it's pretty much worthless to me
         private Func<AzureTableClaim, Claim> _defaultMapToApplicationDomainFunc = ad =>
         {
@@ -37,16 +37,16 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
             return retval;
         };
         // The partition is scoped to the user.  Not sure if this is a good idea.
-        private Func<AzureTableUser, string> _defaultGetClaimsPartitionKey = atu => atu.RowKey + "Claims";
+        private Func<T, string> _defaultGetClaimsPartitionKey = atu => atu.RowKey + "Claims";
         // Not even sure if issuer, type and value are adequate to identify a user's claim
-        private Func<AzureTableUser, Claim, string> _defaultGetClaimsRowKey = (atu, claim) => atu.RowKey + (claim.Issuer.GetHashCode() ^ claim.Type.GetHashCode() ^ claim.Value.GetHashCode()).ToString(CultureInfo.InvariantCulture);
+        private Func<T, Claim, string> _defaultGetClaimsRowKey = (atu, claim) => atu.RowKey + (claim.Issuer.GetHashCode() ^ claim.Type.GetHashCode() ^ claim.Value.GetHashCode()).ToString(CultureInfo.InvariantCulture);
         #endregion
 
         #region props
         /// <summary>
-        /// Maps an <see cref="AzureTableUser"/> and a specific <see cref="Claim"/> to a row key for storing the specified <see cref="Claim"/> for the given user.
+        /// Maps an A <see cref="AzureTableUser"/>-derived type and a specific <see cref="Claim"/> to a row key for storing the specified <see cref="Claim"/> for the given user.
         /// </summary>
-        protected virtual Func<AzureTableUser, Claim, string> MapToClaimsRowKey
+        protected virtual Func<T, Claim, string> MapToClaimsRowKey
         {
             get
             {
@@ -55,9 +55,9 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         }
 
         /// <summary>
-        /// Maps an <see cref="AzureTableUser"/> to a partition key for claims data.
+        /// Maps an A <see cref="AzureTableUser"/>-derived type to a partition key for claims data.
         /// </summary>
-        protected virtual Func<AzureTableUser, string> MapUserToClaimsPartitionKey
+        protected virtual Func<T, string> MapUserToClaimsPartitionKey
         {
             get
             {
@@ -68,7 +68,7 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         /// <summary>
         /// Maps a <see cref="Claim"/> to an <see cref="AzureTableClaim"/>, which can be stored in an Azure table.
         /// </summary>
-        protected virtual Func<AzureTableUser, Claim, AzureTableClaim> MapClaimsToStoreDomain
+        protected virtual Func<T, Claim, AzureTableClaim> MapClaimsToStoreDomain
         {
             get
             {
@@ -103,16 +103,16 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         }
         #endregion
 
-        #region IUserClaimStore<AzureTableUser>
+        #region IUserClaimStore<T>
         /// <summary>
         /// Removes the <paramref name="claim"/> from the given <paramref name="user"/>.
         /// </summary>
-        /// <param name="user"><see cref="AzureTableUser"/></param>
+        /// <param name="user">A <see cref="AzureTableUser"/>-derived type</param>
         /// <param name="claim"><see cref="Claim"/></param>
         /// <returns><see cref="Task"/></returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="user"/> or <paramref name="claim"/> is <c>null</c>.</exception>
         /// <see cref="AzureTableUserException">Thrown whenever a table operation results in a <see cref="StorageException"/> being thrown.</see>
-        public async virtual Task RemoveClaimAsync(AzureTableUser user, Claim claim)
+        public async virtual Task RemoveClaimAsync(T user, Claim claim)
         {
             AssertNotDisposed();
             if (user == null)
@@ -136,12 +136,12 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         /// <summary>
         /// Adds the <paramref name="claim"/> to the given <paramref name="user"/>.
         /// </summary>
-        /// <param name="user"><see cref="AzureTableUser"/></param>
+        /// <param name="user">A <see cref="AzureTableUser"/>-derived type</param>
         /// <param name="claim"><see cref="Claim"/></param>
         /// <returns><see cref="Task"/></returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="user"/> or <paramref name="claim"/> is <c>null</c>.</exception>
         /// <see cref="AzureTableUserException">Thrown whenever a table operation results in a <see cref="StorageException"/> being thrown.</see>
-        public async virtual Task AddClaimAsync(AzureTableUser user, Claim claim)
+        public async virtual Task AddClaimAsync(T user, Claim claim)
         {
             AssertNotDisposed();
             if (user == null)
@@ -164,11 +164,11 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         ///<summary>
         /// Gets all <see cref="Claim">claims</see> for the given <paramref name="user"/>.
         /// </summary>
-        /// <param name="user"><see cref="AzureTableUser"/></param>
+        /// <param name="user">A <see cref="AzureTableUser"/>-derived type</param>
         /// <returns><see cref="Task{T}"/> that returns an <see cref="IList{T}"/> containing the <paramref name="user">user's</paramref> <see cref="Claim">Claims</see>.</returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="user"/> is <c>null</c>.</exception>
         /// <see cref="AzureTableUserException">Thrown whenever a table operation results in a <see cref="StorageException"/> being thrown.</see>
-        public async virtual Task<IList<Claim>> GetClaimsAsync(AzureTableUser user)
+        public async virtual Task<IList<Claim>> GetClaimsAsync(T user)
         {
             AssertNotDisposed();
             if (user == null)
