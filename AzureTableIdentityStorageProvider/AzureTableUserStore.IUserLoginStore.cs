@@ -13,6 +13,19 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
     {
         #region props
         /// <summary>
+        /// The default table name used for the user role store.
+        /// </summary>
+        public const string DefaultUserLoginTableName = "AspNetIdentityUserLoginStore";
+
+        /// <summary>
+        /// Gets the name of the Azure table that stores the user login information.
+        /// </summary>
+        /// <value></value>
+        protected virtual string UserLoginTableName
+        {
+            get { return DefaultUserLoginTableName; }
+        }
+        /// <summary>
         /// Gets the <see cref="TableEntity.PartitionKey"/> used for <see cref="AzureTableUserLogin"/> instances.
         /// </summary>
         protected virtual string AzureTableUserLoginPartitionKey
@@ -48,7 +61,7 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
 
             try
             {
-                await Run(TableOperation.InsertOrReplace(atul));
+                await Run(UserLoginTableName, TableOperation.InsertOrReplace(atul));
             }
             catch (StorageException ex)
             {
@@ -70,7 +83,7 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
             AssertNotDisposed();
             if (login == null)
                 throw new ArgumentNullException("login");
-            var table = await GetTable();
+            var table = await GetTable(UserLoginTableName);
             var query = TableOperation.Retrieve<AzureTableUserLogin>(AzureTableUserLoginPartitionKey, login.ProviderKey);
             try
             {
@@ -100,7 +113,7 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
                 throw new ArgumentNullException("user");
             // this goddamned method prevents me from using the fucking provider name as a fucking partition key.  Am upset.
             // this one-partition-per-type pattern is shitting up the place.
-            var table = await GetTable();
+            var table = await GetTable(UserLoginTableName);
             var userNameQuery = new TableQuery<AzureTableUserLogin>().Where(
                 TableQuery.CombineFilters(
                     TableQuery.GenerateFilterCondition(PropertyNames.PartitionKey, QueryComparisons.Equal, AzureTableUserLoginPartitionKey),
@@ -139,7 +152,7 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
                     ProviderKey = login.ProviderKey
                 };
                 atul.EnsureETagSet();
-                await Run(TableOperation.Delete(atul));
+                await Run(UserLoginTableName, TableOperation.Delete(atul));
             }
             catch (StorageException ex)
             {

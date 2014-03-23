@@ -14,6 +14,20 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         IUserRoleStore<T>
     {
         #region props
+        /// <summary>
+        /// The default table name used for the user role store.
+        /// </summary>
+        public const string DefaultUserRoleTableName = "AspNetIdentityUserRoleStore";
+
+        /// <summary>
+        /// Gets the name of the Azure table that stores the user role information.
+        /// </summary>
+        /// <value></value>
+        protected virtual string UserRoleTableName
+        {
+            get { return DefaultUserRoleTableName; }
+        }
+
         private readonly Func<T, string> _defaultMapUserToUserRolePartitionKey = x => AzureTableUserRoles.DefaultAzureTableUserRolesPartitionKey;
 
         /// <summary>
@@ -63,7 +77,7 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
                 var roles = await GetRolesForUser(user);
                 roles.Roles = Join(roles.Roles, role);
                 var query = TableOperation.InsertOrReplace(roles);
-                await Run(query);
+                await Run(UserRoleTableName, query);
             }
             catch (StorageException ex)
             {
@@ -139,7 +153,7 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
             {
                 var roles = await GetRolesForUser(user);
                 roles.Roles = RemoveRoles(roles.Roles, role);
-                await Run(TableOperation.InsertOrReplace(roles));
+                await Run(UserRoleTableName, TableOperation.InsertOrReplace(roles));
             }
             catch (StorageException ex)
             {
@@ -184,7 +198,7 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
             if (user == null)
                 throw new ArgumentNullException("user");
             var partitionKey = SafeGetUserRolePartitionKey(user);
-            var table = await GetTable();
+            var table = await GetTable(UserRoleTableName);
             var query = TableOperation.Retrieve<AzureTableUserRoles>(partitionKey, user.RowKey);
             AzureTableUserRoles retval = null;
             try

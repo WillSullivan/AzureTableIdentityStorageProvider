@@ -25,12 +25,13 @@ namespace ProviderTests
         {
             var role = new AzureTableRole
             {
-                Id = "Foo",
+                // ASP.NET Identity doesn't supply this on create
+                //Id = "Foo",
                 Name = "Subject"
             };
             var second = new AzureTableRole
             {
-                Id = "Bar",
+                //Id = "Bar",
                 Name = "Dummy"
             };
             var target = Target();
@@ -70,7 +71,7 @@ namespace ProviderTests
             var target = Target();
             var role = new AzureTableRole
             {
-                Id = "foo",
+                //Id = "foo",
                 Name = "bar"
             };
             try
@@ -119,15 +120,12 @@ namespace ProviderTests
                 Id = "foo",
                 Name = "bar"
             };
-            try
+            UtilsLol.AssertThrows(() => target.DeleteAsync(
+            new AzureTableRole
             {
-                target.DeleteAsync(null).Wait();
-                Assert.Fail("DeleteAsync didn't throw on null");
-            }
-            catch (AggregateException ex)
-            {
-                Assert.IsTrue(ex.InnerException is ArgumentNullException);
-            }
+                Name = "bar"
+            }).Wait());
+            UtilsLol.AssertThrows(() => target.DeleteAsync(null).Wait());
 
             target.CreateAsync(role).Wait();
             Assert.IsNotNull(target.FindByIdAsync(role.Id).Result); // sanity
@@ -280,14 +278,13 @@ namespace ProviderTests
                 Name = "bar"
             };
 
-            try
+            UtilsLol.AssertThrows(() => target.UpdateAsync(
+            new AzureTableRole
             {
-                target.UpdateAsync(null).Wait();
-                Assert.Fail("UpdateAsync didn't throw on null");
-            }catch(AggregateException ex)
-            {
-                Assert.IsTrue(ex.InnerException is ArgumentNullException);
-            }
+                Name = "bar"
+            }).Wait());
+
+            UtilsLol.AssertThrows(() => target.UpdateAsync(null).Wait());
 
             target.CreateAsync(role).Wait();
             Assert.IsNotNull(target.FindByIdAsync(role.Id).Result); // sanity

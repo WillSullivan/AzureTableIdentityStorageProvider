@@ -44,6 +44,19 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
 
         #region props
         /// <summary>
+        /// The default table name used for the user role store.
+        /// </summary>
+        public const string DefaultUserClaimTableName = "AspNetIdentityUserClaimStore";
+
+        /// <summary>
+        /// Gets the name of the Azure table that stores the user claim information.
+        /// </summary>
+        /// <value></value>
+        protected virtual string UserClaimTableName
+        {
+            get { return DefaultUserClaimTableName; }
+        }
+        /// <summary>
         /// Maps an A <see cref="AzureTableUser"/>-derived type and a specific <see cref="Claim"/> to a row key for storing the specified <see cref="Claim"/> for the given user.
         /// </summary>
         protected virtual Func<T, Claim, string> MapToClaimsRowKey
@@ -123,7 +136,7 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
             conv.EnsureETagSet();
             try
             {
-                await Run(TableOperation.Delete(conv));
+                await Run(UserClaimTableName, TableOperation.Delete(conv));
             }
             catch (StorageException ex)
             {
@@ -152,7 +165,7 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
             dclaim.EnsureETagSet();
             try
             {
-                await Run(TableOperation.Insert(dclaim));
+                await Run(UserClaimTableName, TableOperation.Insert(dclaim));
             }
             catch (StorageException ex)
             {
@@ -173,7 +186,7 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
             AssertNotDisposed();
             if (user == null)
                 throw new ArgumentNullException("user");
-            var table = await GetTable();
+            var table = await GetTable(UserClaimTableName);
             var query = new TableQuery<AzureTableClaim>().Where(
                     TableQuery.GenerateFilterCondition(PropertyNames.PartitionKey, QueryComparisons.Equal, MapUserToClaimsPartitionKey(user)));
             try

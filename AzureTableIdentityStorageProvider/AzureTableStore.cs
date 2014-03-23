@@ -19,11 +19,6 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         [CLSCompliant(false)]
         protected CloudStorageAccount StorageAccount { get; private set; }
         
-        /// <summary>
-        /// Gets the name of the Azure table.
-        /// </summary>
-        protected abstract string TableName { get; }
-        
         #endregion
         
         #region ctor
@@ -58,13 +53,17 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         /// <summary>
         /// Gets the <see cref="CloudTable" /> that backs this store.
         /// </summary>
+        /// <param name="tableName">The name of the table to retrieve.</param>
         /// <returns>
         /// A <see cref="Task{T}" /> that returns the <see cref="CloudTable" /> instance.
         /// </returns>
-        protected virtual async Task<CloudTable> GetTable()
+        /// <exception cref="ArgumentException">Thrown if <paramref name="tableName"/> is <c>null</c> or empty.</exception>
+        protected virtual async Task<CloudTable> GetTable(string tableName)
         {
+            if (string.IsNullOrWhiteSpace(tableName))
+                throw new ArgumentException("tableName cannot be null, empty, or consist of whitespace.");
             var client = GetTableClient();
-            var result = client.GetTableReference(GetTableName());
+            var result = client.GetTableReference(tableName);
             await result.CreateIfNotExistsAsync();
             return result;
         }
@@ -74,9 +73,9 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         /// </summary>
         /// <param name="op"><see cref="TableOperation"/></param>
         /// <returns><see cref="Task"/></returns>
-        protected virtual async Task<TableResult> Run(TableOperation op)
+        protected virtual async Task<TableResult> Run(string tableName, TableOperation op)
         {
-            var table = await GetTable();
+            var table = await GetTable(tableName);
             return await table.ExecuteAsync(op);
         }
         
@@ -94,24 +93,6 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
             return StorageAccount.CreateCloudTableClient();
         }
         
-        #endregion
-        
-        #region privates
-        
-        /// <summary>
-        /// Gets the <see cref="TableName"/> in a thread-safe manner, performing validity checks.
-        /// </summary>
-        /// <returns>The table name.</returns>
-        /// <exception cref="InvalidOperationException">Thrown if <see cref="TableName"/> is <c>null</c> or empty.</exception>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "TableName", Justification = "Referring to a property")]
-        private string GetTableName()
-        {
-            var tableName = TableName;
-            if (string.IsNullOrWhiteSpace(tableName))
-                throw new InvalidOperationException("TableName cannot be null, empty, or consist of whitespace.");
-            return tableName;
-        }
-
-        #endregion
+        #endregion        
     }
 }

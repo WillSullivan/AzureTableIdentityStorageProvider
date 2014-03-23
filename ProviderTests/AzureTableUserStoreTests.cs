@@ -10,7 +10,6 @@ namespace ProviderTests
     [TestClass()]
     public partial class AzureTableUserStoreTests : AzureTableUserStoreTestBase
     {
-
         #region user
         [TestMethod()]
         public void CreateAsyncTest()
@@ -19,7 +18,8 @@ namespace ProviderTests
             var target = Target();
             var user = new AzureTableUser
             {
-                Id = "foo",
+                //ASP.NET identity doesn't set the ID on a new user, adding this into the provider
+                //Id = "foo",
                 UserName = "bar"
             };
             try
@@ -69,6 +69,10 @@ namespace ProviderTests
                 Id = "foo",
                 UserName = "bar"
             };
+            UtilsLol.AssertThrows(() => target.DeleteAsync(new AzureTableUser
+            {
+                UserName = "bar"
+            }).Wait());
             try
             {
                 target.DeleteAsync(null).Wait();
@@ -229,16 +233,12 @@ namespace ProviderTests
                 Id = "foo",
                 UserName = "bar"
             };
+            UtilsLol.AssertThrows(() => target.UpdateAsync(new AzureTableUser
+            {
+                UserName = "bar"
+            }).Wait());
 
-            try
-            {
-                target.UpdateAsync(null).Wait();
-                Assert.Fail("UpdateAsync didn't throw on null");
-            }
-            catch (AggregateException ex)
-            {
-                Assert.IsTrue(ex.InnerException is ArgumentNullException);
-            }
+            UtilsLol.AssertThrows(() => target.UpdateAsync(null).Wait());
 
             target.CreateAsync(user).Wait();
             Assert.IsNotNull(target.FindByIdAsync(user.Id).Result); // sanity

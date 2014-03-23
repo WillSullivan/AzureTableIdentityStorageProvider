@@ -32,7 +32,7 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         protected const string Name = "Name";
 
         /// <summary>
-        /// The default <see cref="TableName">Azure table name</see> used by this instance.
+        /// The default <see cref="RoleTableName">Azure table name</see> used by this instance.
         /// </summary>
         public const string DefaultTableName = "AspNetIdentityRoleStore";
 
@@ -40,7 +40,7 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         /// Gets the name of the Azure table.
         /// </summary>
         /// <value></value>
-        protected override string TableName
+        protected virtual string RoleTableName
         {
             get
             {
@@ -76,9 +76,11 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
             AssertNotDisposed();
             if (role == null)
                 throw new ArgumentNullException("role");
+            if (role.Id == null)
+                SetRoleId(role);
             try
             {
-                var result = await Run(TableOperation.Insert(role));
+                var result = await Run(RoleTableName, TableOperation.Insert(role));
                 role.ETag = result.Etag;
             }
             catch (StorageException ex)
@@ -101,10 +103,12 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
             AssertNotDisposed();
             if (role == null)
                 throw new ArgumentNullException("role");
+            if (string.IsNullOrWhiteSpace(role.RowKey))
+                throw new ArgumentException("Role Id not set", "role");
             role.EnsureETagSet();
             try
             {
-                await Run(TableOperation.Delete(role));
+                await Run(RoleTableName, TableOperation.Delete(role));
             }
             catch (StorageException ex)
             {
@@ -129,7 +133,7 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
             AssertNotDisposed();
             if (string.IsNullOrWhiteSpace(roleId))
                 throw new ArgumentException("roleId cannot be null, empty, or consist of whitespace.");
-            var table = await GetTable();
+            var table = await GetTable(RoleTableName);
             var query = TableOperation.Retrieve<AzureTableRole>(AzureTableRole.DefaultRolePartitionKey, roleId);
             try
             {
@@ -154,7 +158,7 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
             AssertNotDisposed();
             if (string.IsNullOrWhiteSpace(roleName))
                 throw new ArgumentException("roleName cannot be null, empty, or consist of whitespace.");
-            var table = await GetTable();
+            var table = await GetTable(RoleTableName);
             var query = new TableQuery<AzureTableRole>().Where(
                 TableQuery.CombineFilters(
                     TableQuery.GenerateFilterCondition(PartitionKey, QueryComparisons.Equal, AzureTableRole.DefaultRolePartitionKey),
@@ -178,17 +182,20 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         /// <param name="role"><see cref="AzureTableRole"/></param>
         /// <returns><see cref="Task"/></returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="role"/> is <c>null</c>.</exception>
-            /// <see cref="AzureTableRoleException">Thrown whenever a table operation results in a <see cref="StorageException"/> being thrown.</see>
+        /// <see cref="AzureTableRoleException">Thrown whenever a table operation results in a <see cref="StorageException"/> being thrown.</see>
+        /// <see cref="AzureTableRoleException">Thrown whenever a table operation results in a <see cref="StorageException"/> being thrown.</see>
         public async Task UpdateAsync(AzureTableRole role)
         {
             AssertNotDisposed();
             if (role == null)
                 throw new ArgumentNullException("role");
+            if (string.IsNullOrWhiteSpace(role.RowKey))
+                throw new ArgumentException("Role Id not set", "role");
             role.EnsureETagSet();
             var op = TableOperation.Replace(role);
             try
             {
-                var result = await Run(op);
+                var result = await Run(RoleTableName, op);
                 role.ETag = result.Etag;
             }
             catch (StorageException ex)
@@ -197,6 +204,21 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
             }
         }
 
+        #endregion
+
+        #region protecteds
+        /// <summary>
+        /// Sets the <see cref="AzureTableRole.Id">role's Id</see>.
+        /// </summary>
+        /// <param name="role"><see cref="AzureTableRole"/></param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="role"/> is <c>null</c>.</exception>
+        /// <remarks>When a role is created, ASP.NET Identity does not generate an Id.  This method allows inheritors to use their own algorithm for the role's Id.</remarks>
+        protected virtual void SetRoleId(AzureTableRole role)
+        {
+            if (role == null)
+                throw new ArgumentNullException("role");
+            role.Id = Guid.NewGuid().ToString(); // haaaaaaack
+        }
         #endregion
     }
 }

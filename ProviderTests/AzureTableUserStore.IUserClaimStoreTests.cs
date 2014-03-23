@@ -13,7 +13,6 @@ namespace ProviderTests
     [TestClass]
     public class AzureTableUserStoreIUserClaimStoreTests : AzureTableUserStoreTestBase
     {
-
         AzureTableUser _user = new AzureTableUser
         {
             Id = "derpClaim",

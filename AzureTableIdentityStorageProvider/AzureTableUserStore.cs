@@ -22,16 +22,20 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         AzureTableStore,
         IUserStore<T> where T : AzureTableUser, new()
     {
+        #region Props
         /// <summary>
         /// The default table name used for the AzureTableUserStore.
         /// </summary>
-        public const string DefaultTableName = "AspNetIdentityUserStore";
+        public const string DefaultUserTableName = "AspNetIdentityUserStore";
 
-        #region Props
         /// <summary>
-        /// The partition key used in the users table.
+        /// Gets the name of the Azure table.
         /// </summary>
-        public virtual string UserPartitionKey { get { return AzureTableUser.DefaultAspNetUserPartitionKey; } }
+        /// <value></value>
+        protected virtual string UserTableName
+        {
+            get { return DefaultUserTableName; }
+        }
 
         /// <summary>
         /// Gets the type of <see cref="StringComparison"/> used in string comparisons.
@@ -56,17 +60,6 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         }
         #endregion
 
-        #region AzureTableStore members
-        /// <summary>
-        /// Gets the name of the Azure table.
-        /// </summary>
-        /// <value></value>
-        protected override string TableName
-        {
-            get { return DefaultTableName; }
-        }
-        #endregion
-
         #region ctor
         /// <summary>
         /// Initializes a new instance of the <see cref="AzureTableUserStore" /> class.
@@ -88,14 +81,20 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         /// <param name="user">A <see cref="AzureTableUser"/>-derived type</param>
         /// <returns><see cref="Task"/></returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="user"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown if <paramref name="T.UserName"/> is <c>null</c> or empty.</exception>
         public virtual async Task CreateAsync(T user)
         {
             AssertNotDisposed();
             if (user == null)
                 throw new ArgumentNullException("user");
+            if (string.IsNullOrWhiteSpace(user.UserName))
+                throw new ArgumentException("user.UserName cannot be null, empty, or consist of whitespace.");
+            if (user.Id == null)
+                SetUserId(user);
             try
-            {                
-                var result = await Run(TableOperation.Insert(user));
+            {
+                user.PartitionKey = GetPartitionKeyByUserName(user.UserName);
+                var result = await Run(UserTableName, TableOperation.Insert(user));
                 user.ETag = result.Etag;
             }
             catch (StorageException ex)
@@ -112,15 +111,20 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         /// <param name="user">A <see cref="AzureTableUser"/>-derived type</param>
         /// <returns><see cref="Task"/></returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="user"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown if the <paramref name="user">user's</paramref> Id is null, empty or whitespace.</exception>
         public virtual async Task DeleteAsync(T user)
         {
             AssertNotDisposed();
             if (user == null)
                 throw new ArgumentNullException("user");
+            if (string.IsNullOrWhiteSpace(user.RowKey))
+                throw new ArgumentException("User Id not set", "user");
             user.EnsureETagSet();
             try
             {
-                await Run(TableOperation.Delete(user));
+                user.PartitionKey = GetPartitionKeyByUserName(user.UserName);
+                user.EnsureETagSet(); // I don't think this is necessary here but, whatevs
+                await Run(UserTableName, TableOperation.Delete(user));
             }
             catch (StorageException ex)
             {
@@ -142,12 +146,13 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
             AssertNotDisposed();
             if (string.IsNullOrWhiteSpace(userId))
                 throw new ArgumentException("userId cannot be null, empty, or consist of whitespace.");
-            var table = await GetTable();
-            var query = TableOperation.Retrieve<T>(UserPartitionKey, userId);
-            var result = await table.ExecuteAsync(query);
+            var table = await GetTable(UserTableName);
+            var query = new TableQuery<T>().Where(
+                    TableQuery.GenerateFilterCondition(PropertyNames.Id, QueryComparisons.Equal, userId))
+                    .Take(1);
             try
             {
-                return result.Result as T; 
+                return table.ExecuteQuery(query).FirstOrDefault() as T;
             }
             catch (StorageException ex)
             {
@@ -166,10 +171,10 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
             AssertNotDisposed();
             if (string.IsNullOrWhiteSpace(userName))
                 throw new ArgumentException("userName cannot be null, empty, or consist of whitespace.");
-            var table = await GetTable();
+            var table = await GetTable(UserTableName);
             var userNameQuery = new TableQuery<T>().Where(
                 TableQuery.CombineFilters(
-                    TableQuery.GenerateFilterCondition(PropertyNames.PartitionKey, QueryComparisons.Equal, UserPartitionKey),
+                    TableQuery.GenerateFilterCondition(PropertyNames.PartitionKey, QueryComparisons.Equal, GetPartitionKeyByUserName(userName)),
                     TableOperators.And,
                     TableQuery.GenerateFilterCondition(PropertyNames.UserName, QueryComparisons.Equal, userName)))
                     .Take(1);
@@ -190,16 +195,20 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         /// <param name="user">A <see cref="AzureTableUser"/>-derived type</param>
         /// <returns><see cref="Task"/></returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="user"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown if the <paramref name="user">user's</paramref> Id is null, empty or whitespace.</exception>
         public virtual async Task UpdateAsync(T user)
         {
             AssertNotDisposed();
             if (user == null)
                 throw new ArgumentNullException("user");
+            if (string.IsNullOrWhiteSpace(user.RowKey))
+                throw new ArgumentException("User Id not set", "user");
             user.EnsureETagSet();
             var op = TableOperation.Replace(user);
             try
             {
-                var result = await Run(op);
+                user.PartitionKey = GetPartitionKeyByUserName(user.UserName);
+                var result = await Run(UserTableName, op);
                 user.ETag = result.Etag;
             }
             catch (StorageException ex)
@@ -208,6 +217,31 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
             }
         }
 
+        #endregion
+
+        #region protecteds
+        /// <summary>
+        /// Called when a new user is created.  Allows inheritors to generate a new Id for the user.
+        /// </summary>
+        /// <param name="user">The user to create an Id for.</param>
+        protected virtual void SetUserId(T user)
+        {
+            user.Id = Guid.NewGuid().ToString(); // I feel dirty
+        }
+
+        /// <summary>
+        /// Gets the partition key by user name.  
+        /// </summary>
+        /// <param name="userName">The user's name.</param>
+        /// <returns>The partition key</returns>
+        /// <exception cref="ArgumentException">Thrown if <paramref name="userName"/> is <c>null</c> or empty.</exception>
+        /// <remarks>The default implementation returns <see cref="AzureTableUser.DefaultAspNetUserPartitionKey"/>.  This method is called on creation to allow inheritors to use an algorithm to generate partitions for users.  It is also used when searching for a user by name.</remarks>
+        protected virtual string GetPartitionKeyByUserName(string userName)
+        {
+            if (string.IsNullOrWhiteSpace(userName))
+                throw new ArgumentException("userName cannot be null, empty, or consist of whitespace.");
+            return AzureTableUser.DefaultAspNetUserPartitionKey;
+        }
         #endregion
     }
 }
