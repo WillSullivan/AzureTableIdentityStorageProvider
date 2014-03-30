@@ -14,7 +14,7 @@ This is still in early development, so don't expect it to work perfectly.  I'll 
 * 1.2: First issues with use, first bug fixes..  
 
 ##Currently missing/failing/FYI
-* project documentation on Github
+* Nothing!  You can get the installation instructions [here in the wiki](https://github.com/WillSullivan/AzureTableIdentityStorageProvider/wiki/Installation-and-Setup).
 
 ##Latest commit notes
 Finally have a chance to start using it. Went boom on first use. ASP.NET Identity apparently trusts the storage provider with the responsibility of assigning Ids to users on creation. Fancy that.  Now creation methods for users and roles will check for a null/empty/whitespace Id and will use a virtual method to assign one if it doesn't exist. Also will throw an ArgumentException on Update or Delete if the Id is not set.
