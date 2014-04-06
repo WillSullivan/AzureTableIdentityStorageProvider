@@ -4,7 +4,7 @@ The project is an implementation of `Microsoft.AspNet.Identity.Core` for storing
 
 This is still in early development, so don't expect it to work perfectly.  I'll be using this in another project that is undergoing concurrent development, so updates will be forthcoming.
 
-**Please note!** Unit tests depend on you having the *latest version* of the storage emulator installed.  [This is currently in beta.](http://blogs.msdn.com/b/windowsazurestorage/archive/2014/01/16/windows-azure-storage-emulator-2-2-1-preview-release-with-support-for-2013-08-15-version.aspx)
+**Please note!** Unit tests depend on you having the *latest version* of the storage emulator installed.  [This is currently in beta.](http://blogs.msdn.com/b/windowsazurestorage/archive/2014/01/16/windows-azure-storage-emulator-2-2-1-preview-release-with-support-for-2013-08-15-version.aspx).  Note that the installation instructions for that version require you manually copying files, so make sure you read them!
 
 ##Version history
 (Version histories are the file version, which matches the major/minor for the assembly version)  
@@ -14,7 +14,7 @@ This is still in early development, so don't expect it to work perfectly.  I'll 
 * 1.2: First issues with use, first bug fixes..  
 
 ##Currently missing/failing/FYI
-* Nothing!  You can get the installation instructions [here in the wiki](https://github.com/WillSullivan/AzureTableIdentityStorageProvider/wiki/Installation-and-Setup).
+There are some issues with adding more than two (?) external auths, or it may be issues with Goog and Foob auth.  I'm currently investigating this.  I'm also trying to get updated to 2.3, but I'm having issues with the storage emulator.  I'm working on this as of the last edit of this file :/
 
 ##Latest commit notes
 Finally have a chance to start using it. Went boom on first use. ASP.NET Identity apparently trusts the storage provider with the responsibility of assigning Ids to users on creation. Fancy that.  Now creation methods for users and roles will check for a null/empty/whitespace Id and will use a virtual method to assign one if it doesn't exist. Also will throw an ArgumentException on Update or Delete if the Id is not set.
