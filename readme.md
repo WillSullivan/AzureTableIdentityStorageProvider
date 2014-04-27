@@ -12,18 +12,18 @@ This is still in early development, so don't expect it to work perfectly.  I'll 
 * 1.0: Initial checkin  
 * 1.1: Implementation is generic; user type must extend AzureTableUser.  
 * 1.2: First issues with use, first bug fixes..  
+* 1.3: More show-stopping bug fixes
+* 1.3.1: Password hashing method assumed the user existed and needed to be updated; fixed
 
 ##Currently missing/failing/FYI
-* project documentation on Github
+**This project has NOT YET been proven to work with ASP.NET Identity**
+I'm keeping the above line in this section until I can actually get the project to work. 
+Identity is being a bitch, doing weird unexpected things.  Most recently, and notably, I found out that Identity calls IUserStore%lt;T>.UpdateAsync when *adding a new local user*.  God.  Damnit.  
 
 ##Latest commit notes
-Finally have a chance to start using it. Went boom on first use. ASP.NET Identity apparently trusts the storage provider with the responsibility of assigning Ids to users on creation. Fancy that.  Now creation methods for users and roles will check for a null/empty/whitespace Id and will use a virtual method to assign one if it doesn't exist. Also will throw an ArgumentException on Update or Delete if the Id is not set.
+1.3 created because I derped.  The issue I was having was that I was assuming that a user existed and must be updated when applying a password hash.  I've pulled that part out (and deleted some mean tweets).
 
-After having to use it, and seeing how chucking everything into the same table results in a gawdawful mess of columns (and possible collisions later on), I've refactored AzureTableStore to require a table name for its methods.  This way each implementation can provide its own table name.
-
-In addition, I've decided to actively map user names to user table partition keys.  This will allow for faster user lookups, but I'm afraid there might be an issue if ASP.NET Identity relies heavily on looking up users by their name.  I'm  watching this for now, so I may revert this in future. The behavior is the same as before by default, using the same partition key.  Inheritors can override a method that is called to map the user name to partition key.  This method is called on every user operation, so manually setting the partition key is pointless.
-
-I've removed the nupkg from the project file, but it's still in source control.  Not sure about that pattern.  
+I had to push an update to NuGet in order to test, and subsequently discovered my error.  Version 1.3 of the NuGet package is therefore worthless, so 1.3.1 is created.
 
 ##Previous commit notes
 ###1.1
@@ -32,3 +32,11 @@ I'm starting to integrate the implementation into my web project.  The first thi
 Version 1.1 adds this in.  I tried doing this from the start, but things didn't go very smoothly.  Once the entire thing was written, it was easy to switch to a generic implementation.  There are going to be rough spots with the docs.  I know, I should have spent more time tweaking them.  Aishhole move on my part.
 
 I'm also noticing that it is going to be hard to track what has been changed in order to start working on the wiki.  Primarily because  I don't know what the hell I'm doing at this point.  Inspires confidence, no?
+###1.2
+Finally have a chance to start using it. Went boom on first use. ASP.NET Identity apparently trusts the storage provider with the responsibility of assigning Ids to users on creation. Fancy that.  Now creation methods for users and roles will check for a null/empty/whitespace Id and will use a virtual method to assign one if it doesn't exist. Also will throw an ArgumentException on Update or Delete if the Id is not set.
+
+After having to use it, and seeing how chucking everything into the same table results in a gawdawful mess of columns (and possible collisions later on), I've refactored AzureTableStore to require a table name for its methods.  This way each implementation can provide its own table name.
+
+In addition, I've decided to actively map user names to user table partition keys.  This will allow for faster user lookups, but I'm afraid there might be an issue if ASP.NET Identity relies heavily on looking up users by their name.  I'm  watching this for now, so I may revert this in future. The behavior is the same as before by default, using the same partition key.  Inheritors can override a method that is called to map the user name to partition key.  This method is called on every user operation, so manually setting the partition key is pointless.
+
+I've removed the nupkg from the project file, but it's still in source control.  Not sure about that pattern.

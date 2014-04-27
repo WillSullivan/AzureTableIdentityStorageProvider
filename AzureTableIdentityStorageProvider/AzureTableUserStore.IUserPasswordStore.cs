@@ -8,7 +8,7 @@ using Microsoft.WindowsAzure.Storage.Table;
 namespace StateStreetGang.AspNet.Identity.AzureTable
 {
 
-    public partial class AzureTableUserStore<T> : 
+    public partial class AzureTableUserStore<T> :
         IUserPasswordStore<T>
     {
         #region IUserPasswordStore<T> Members
@@ -46,15 +46,20 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         /// <returns><see cref="Task"/></returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="passwordHash"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown if <paramref name="passwordHash"/> is empty or consists solely of whitespace.</exception>
-        public async Task SetPasswordHashAsync(T user, string passwordHash)
+        /// <remarks>This method is called prior to creating a local user.  The given <paramref name="user"/> does not necessarily exist already within the system, nor should it be assumed that this method should update the user prior to returning.</remarks>
+        public Task SetPasswordHashAsync(T user, string passwordHash)
         {
-            if (passwordHash == null)
-                throw new ArgumentNullException("passwordHash");
-            if (string.IsNullOrWhiteSpace(passwordHash))
-                throw new ArgumentException("passwordHash cannot be null, empty, or consist of whitespace.");
-            user.PasswordHash = passwordHash;
-            user.EnsureETagSet();
-            await UpdateAsync(user);
+            return Task.Run(() =>
+            {
+                if (passwordHash == null)
+                    throw new ArgumentNullException("passwordHash");
+                if (string.IsNullOrWhiteSpace(passwordHash))
+                    throw new ArgumentException("passwordHash cannot be null, empty, or consist of whitespace.");
+                user.PasswordHash = passwordHash;
+            });
+
+            //user.EnsureETagSet();
+            //await UpdateAsync(user);
         }
 
         #endregion
