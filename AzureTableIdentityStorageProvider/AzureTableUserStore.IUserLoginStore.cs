@@ -55,7 +55,7 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
             var atul = new AzureTableUserLogin
             {
                 LoginProvider = login.LoginProvider,
-                ProviderKey= login.ProviderKey,
+                ProviderKey = Encode(login.ProviderKey), // goog's is a fukken URL. Damnit, goog.
                 UserId = user.Id,
             };
 
@@ -84,7 +84,7 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
             if (login == null)
                 throw new ArgumentNullException("login");
             var table = await GetTable(UserLoginTableName);
-            var query = TableOperation.Retrieve<AzureTableUserLogin>(AzureTableUserLoginPartitionKey, login.ProviderKey);
+            var query = TableOperation.Retrieve<AzureTableUserLogin>(AzureTableUserLoginPartitionKey, Encode(login.ProviderKey));
             try
             {
                 var temp = await table.ExecuteAsync(query);
@@ -149,7 +149,7 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
                 var atul = new AzureTableUserLogin
                 {
                     PartitionKey = AzureTableUserLoginPartitionKey,
-                    ProviderKey = login.ProviderKey
+                    ProviderKey = Encode(login.ProviderKey)
                 };
                 atul.EnsureETagSet();
                 await Run(UserLoginTableName, TableOperation.Delete(atul));
@@ -160,5 +160,18 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
             }
         }
         #endregion
+        /// <summary>
+        /// Encodes the given string for inclusion in a web request.
+        /// </summary>
+        /// <param name="value">The string to send</param>
+        /// <returns>the HTML encoded string</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="value"/> is <c>null</c>.</exception>
+        /// <remarks>Should be used on RowKey values, if there is a possibility of Azure Table errors (show as bad request errors)</remarks>
+        protected virtual string Encode(string value)
+        {
+            if (value == null)
+                throw new ArgumentNullException("value");
+            return System.Net.WebUtility.UrlEncode(value);
+        }
     }
 }
