@@ -168,11 +168,12 @@ namespace ProviderTests
         [TestMethod()]
         public void FindByNameAsyncTest()
         {
+            var userName = "This is My User Name";
             var target = Target();
             var user = new AzureTableUser
             {
                 Id = "foo",
-                UserName = "bar"
+                UserName = userName
             };
 
             try
@@ -206,6 +207,15 @@ namespace ProviderTests
             target.CreateAsync(user).Wait();
             var backagain = target.FindByNameAsync(user.UserName).Result;
             Assert.IsNotNull(backagain); // sanity
+
+            //FindByName should be CASE INSENSITIVE!
+            // The current storage emulator has a BUG that prevents this part of the test from working :/
+            //var insensitive = target.FindByNameAsync(userName.ToLowerInvariant()).Result;
+            //Assert.IsNotNull(insensitive);
+            //insensitive = target.FindByNameAsync(userName.ToUpperInvariant()).Result;
+            //Assert.IsNotNull(insensitive);
+            //insensitive = target.FindByNameAsync(userName).Result;
+            //Assert.IsNotNull(insensitive);
 
             target.DeleteAsync(user).Wait();
 

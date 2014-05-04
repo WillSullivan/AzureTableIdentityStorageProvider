@@ -14,10 +14,6 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         IUserRoleStore<T>
     {
         #region props
-        /// <summary>
-        /// The default table name used for the user role store.
-        /// </summary>
-        public const string DefaultUserRoleTableName = "AspNetIdentityUserRoleStore";
 
         /// <summary>
         /// Gets the name of the Azure table that stores the user role information.
@@ -66,16 +62,16 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         /// <exception cref="ArgumentException">Thrown if <paramref name="role"/> is empty or consists only of whitespace, or if the role contains the <see cref="UserRoleDelimiter"/> string.</exception>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="role"/> is <c>null</c>.</exception>
         /// <see cref="AzureTableUserException">Thrown whenever a table operation results in a <see cref="StorageException"/> being thrown.</see>
-        public virtual async Task AddToRoleAsync(T user, string role)
+        public virtual async Task AddToRoleAsync(T user, string roleName)
         {
             AssertNotDisposed();
             if (user == null)
                 throw new ArgumentNullException("user");
-            ValidateRole(role);
+            ValidateRole(roleName);
             try
             {
                 var roles = await GetRolesForUser(user);
-                roles.Roles = Join(roles.Roles, role);
+                roles.Roles = Join(roles.Roles, roleName);
                 var query = TableOperation.InsertOrReplace(roles);
                 await Run(UserRoleTableName, query);
             }
@@ -116,18 +112,18 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="user"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown if <paramref name="role"/> is <c>null</c> or empty.</exception>
         /// <see cref="AzureTableUserException">Thrown whenever a table operation results in a <see cref="StorageException"/> being thrown.</see>
-        public virtual async Task<bool> IsInRoleAsync(T user, string role)
+        public virtual async Task<bool> IsInRoleAsync(T user, string roleName)
         {
             AssertNotDisposed();
             if (user == null)
                 throw new ArgumentNullException("user");
-            ValidateRole(role);
+            ValidateRole(roleName);
 
             try
             {
                 var ur = await GetRolesForUser(user);
                 var roles = Split(ur.Roles);
-                return roles.Any(x => x.Equals(role, StringComparisonType));
+                return roles.Any(x => x.Equals(roleName, StringComparisonType));
             }
             catch (StorageException ex)
             {
@@ -143,16 +139,16 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="user"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown if <paramref name="role"/> is <c>null</c> or empty.</exception>
         /// <see cref="AzureTableUserException">Thrown whenever a table operation results in a <see cref="StorageException"/> being thrown.</see>
-        public virtual async Task RemoveFromRoleAsync(T user, string role)
+        public virtual async Task RemoveFromRoleAsync(T user, string roleName)
         {
             AssertNotDisposed();
             if (user == null)
                 throw new ArgumentNullException("user");
-            ValidateRole(role);
+            ValidateRole(roleName);
             try
             {
                 var roles = await GetRolesForUser(user);
-                roles.Roles = RemoveRoles(roles.Roles, role);
+                roles.Roles = RemoveRoles(roles.Roles, roleName);
                 await Run(UserRoleTableName, TableOperation.InsertOrReplace(roles));
             }
             catch (StorageException ex)

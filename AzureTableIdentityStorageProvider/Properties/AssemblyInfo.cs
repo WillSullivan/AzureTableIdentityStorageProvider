@@ -12,7 +12,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 [assembly: Guid("c6c125f6-259d-475d-a09d-c0d5aa4e2441")]
 [assembly: AssemblyVersion("1.3.*")]
-[assembly: AssemblyFileVersion("1.3.2.0")]
+[assembly: AssemblyFileVersion("1.3.3.0")]
 [assembly: NeutralResourcesLanguage("en-US")]
 [assembly: CLSCompliant(false)]
 
@@ -23,4 +23,5 @@ using System.Runtime.InteropServices;
 // 1.2.* User partition not static, table per provider, Id algorithm enforced on creation
 // 1.3.* damnit, missed updating this; can reconstruct later
 // 1.3.2.0 Google's provider key sucks html balls
+// 1.3.3.0 FindByNameAsync now performs a case-insensitive search
 

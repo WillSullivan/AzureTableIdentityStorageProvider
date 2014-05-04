@@ -14,17 +14,6 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
     public partial class AzureTableUserStore<T> :
         IUserClaimStore<T>
     {
-        #region consts
-        /// <summary>
-        /// The key in <see cref="Claim.Properties"/> that stores the <see cref="Microsoft.WindowsAzure.Storage.Table.TableEntity.PartitionKey"/> of a <see cref="Claim">Claim's</see> storage model.
-        /// </summary>
-        public const string ClaimsPartitionKeyPropertyKey = "ClaimsPartitionKey";
-        /// <summary>
-        /// The key in <see cref="Claim.Properties"/> that stores the <see cref="Microsoft.WindowsAzure.Storage.Table.TableEntity.RowKey"/> of a <see cref="Claim">Claim's</see> storage model.
-        /// </summary>
-        public const string ClaimsRowKeyPropertyKey = "ClaimsRowKey";
-        #endregion
-
         #region privates
         // Goddamnit, framework.
         private Func<T, Claim, AzureTableClaim> _defaultMapToStoreDomainFunc;
@@ -43,10 +32,6 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         #endregion
 
         #region props
-        /// <summary>
-        /// The default table name used for the user role store.
-        /// </summary>
-        public const string DefaultUserClaimTableName = "AspNetIdentityUserClaimStore";
 
         /// <summary>
         /// Gets the name of the Azure table that stores the user claim information.

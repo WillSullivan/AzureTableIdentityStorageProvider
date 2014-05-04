@@ -19,14 +19,10 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
     /// 
     /// This pattern may seem a little odd, but it adds a level of convenience as all interfaces also implement <see cref="IUserStore{T}"/>.</remarks>
     public partial class AzureTableUserStore<T> :
-        AzureTableStore,
+        AzureTableUserStore,
         IUserStore<T> where T : AzureTableUser, new()
     {
         #region Props
-        /// <summary>
-        /// The default table name used for the AzureTableUserStore.
-        /// </summary>
-        public const string DefaultUserTableName = "AspNetIdentityUserStore";
 
         /// <summary>
         /// Gets the name of the Azure table.
@@ -176,7 +172,7 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
                 TableQuery.CombineFilters(
                     TableQuery.GenerateFilterCondition(PropertyNames.PartitionKey, QueryComparisons.Equal, GetPartitionKeyByUserName(userName)),
                     TableOperators.And,
-                    TableQuery.GenerateFilterCondition(PropertyNames.UserName, QueryComparisons.Equal, userName)))
+                    TableQuery.GenerateFilterCondition(PropertyNames.SearchUserName, QueryComparisons.Equal, userName.ToUpperInvariant())))
                     .Take(1);
 
             try
@@ -243,5 +239,47 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
             return AzureTableUser.DefaultAspNetUserPartitionKey;
         }
         #endregion
+    }
+
+    /// <summary>
+    /// A non-generic base class, the sole purpose is for holding const values for <see cref="AzureTableUserStore{T}"/>.
+    /// </summary>
+    public abstract class AzureTableUserStore : AzureTableStore
+    {
+        #region consts
+        /// <summary>
+        /// The default table name used for the user role store.
+        /// </summary>
+        public const string DefaultUserRoleTableName = "AspNetIdentityUserRoleStore";
+        /// <summary>
+        /// The default table name used for the user role store.
+        /// </summary>
+        public const string DefaultUserLoginTableName = "AspNetIdentityUserLoginStore";
+        /// <summary>
+        /// The default table name used for the user role store.
+        /// </summary>
+        public const string DefaultUserClaimTableName = "AspNetIdentityUserClaimStore";
+        /// <summary>
+        /// The key in <see cref="Claim.Properties"/> that stores the <see cref="Microsoft.WindowsAzure.Storage.Table.TableEntity.PartitionKey"/> of a <see cref="Claim">Claim's</see> storage model.
+        /// </summary>
+        public const string ClaimsPartitionKeyPropertyKey = "ClaimsPartitionKey";
+        /// <summary>
+        /// The key in <see cref="Claim.Properties"/> that stores the <see cref="Microsoft.WindowsAzure.Storage.Table.TableEntity.RowKey"/> of a <see cref="Claim">Claim's</see> storage model.
+        /// </summary>
+        public const string ClaimsRowKeyPropertyKey = "ClaimsRowKey";
+        /// <summary>
+        /// The default table name used for the AzureTableUserStore.
+        /// </summary>
+        public const string DefaultUserTableName = "AspNetIdentityUserStore";
+        #endregion
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AzureTableUserStore" /> class.
+        /// </summary>
+        /// <param name="connectionString">The Azure table connection string.</param>
+        /// <exception cref="ArgumentException">Thrown if <paramref name="connectionString" /> is <c>null</c> or empty.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="connectionString"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown if <paramref name="connectionString"/> is <c>null</c> or empty.</exception>
+        protected AzureTableUserStore(string connectionString) : base(connectionString) { }
     }
 }

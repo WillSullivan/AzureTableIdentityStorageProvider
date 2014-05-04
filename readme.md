@@ -6,6 +6,16 @@ This is still in early development, so don't expect it to work perfectly.  I'll 
 
 **Please note!** Unit tests depend on you having the *latest version* of the storage emulator installed.  [This is currently in beta.](http://blogs.msdn.com/b/windowsazurestorage/archive/2014/01/16/windows-azure-storage-emulator-2-2-1-preview-release-with-support-for-2013-08-15-version.aspx)
 
+##Currently missing/failing/FYI
+**This project has NOT YET been proven to work with ASP.NET Identity**
+I'm keeping the above line in this section until I can actually get the project to work. 
+One step closer.  User and user logins appear to be working correctly now.  Not sure about other parts (e.g., claims).
+
+##Latest commit notes
+Quickly learned that Azure Storage queries are *case insensitive*, which can cause a situation where two users can have the same name, but only if they use different casing.  As user names MUST BE distinct in ASP.NET Identity (ugh), this results in the unwanted situation where users can impersonate others easier by using similar names that differ only by case.  If names were not required to be distinct, it would be known that different users can share the same user name, and therefore this wouldn't be an issue.  Unfortunately, it is.
+
+I also got rid of some build warnings.  Yay.
+
 ##Version history
 (Version histories are the file version, which matches the major/minor for the assembly version)  
 
@@ -14,15 +24,8 @@ This is still in early development, so don't expect it to work perfectly.  I'll 
 * 1.2: First issues with use, first bug fixes..  
 * 1.3: More show-stopping bug fixes
 * 1.3.1: Password hashing method assumed the user existed and needed to be updated; fixed
-* 1.3.2: User login failed for Google because their provider key sucks at 
-
-##Currently missing/failing/FYI
-**This project has NOT YET been proven to work with ASP.NET Identity**
-I'm keeping the above line in this section until I can actually get the project to work. 
-One step closer.  User and user logins appear to be working correctly now.  Not sure about other parts (e.g., claims).
-
-##Latest commit notes
-I finally got my error logging working on my website, so I was able to track down the problem logging in with Google.  The issue turned out to be one where their provider key is a URL, which contains characters not acceptable within a RowKey.  This resulted in a bland 400 error, which required I track down the method whose call caused the exception, examine the data going out, make some guesses on why, prove them with a prototype, and create a one line fix.  Goddamnit.
+* 1.3.2: User login failed for Google because their provider key sucks at Azure
+* 1.3.3: FindByNameAsync now performs case-insensitive searches
 
 ##Previous commit notes
 ###1.1
@@ -43,3 +46,5 @@ I've removed the nupkg from the project file, but it's still in source control. 
 1.3 created because I derped.  The issue I was having was that I was assuming that a user existed and must be updated when applying a password hash.  I've pulled that part out (and deleted some mean tweets).
 
 I had to push an update to NuGet in order to test, and subsequently discovered my error.  Version 1.3 of the NuGet package is therefore worthless, so 1.3.1 is created.
+###1.3.2
+I finally got my error logging working on my website, so I was able to track down the problem logging in with Google.  The issue turned out to be one where their provider key is a URL, which contains characters not acceptable within a RowKey.  This resulted in a bland 400 error, which required I track down the method whose call caused the exception, examine the data going out, make some guesses on why, prove them with a prototype, and create a one line fix.  Goddamnit.

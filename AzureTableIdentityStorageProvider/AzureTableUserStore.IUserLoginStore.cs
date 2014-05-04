@@ -12,10 +12,6 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
     public partial class AzureTableUserStore<T> : IUserLoginStore<T>
     {
         #region props
-        /// <summary>
-        /// The default table name used for the user role store.
-        /// </summary>
-        public const string DefaultUserLoginTableName = "AspNetIdentityUserLoginStore";
 
         /// <summary>
         /// Gets the name of the Azure table that stores the user login information.

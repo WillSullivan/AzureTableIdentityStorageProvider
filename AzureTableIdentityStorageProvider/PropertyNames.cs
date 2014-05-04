@@ -32,6 +32,10 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
         /// </summary>
         public const string UserName = "UserName";
         /// <summary>
+        /// The name of the <see cref="AzureTableUser.SearchUserName"/> property.
+        /// </summary>
+        public const string SearchUserName = "SearchUserName";
+        /// <summary>
         /// The name of the <see cref="AzureTableRole.Name"/> property.
         /// </summary>
         public const string Name = "Name";
