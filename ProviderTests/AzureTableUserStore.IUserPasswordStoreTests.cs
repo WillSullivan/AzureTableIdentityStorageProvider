@@ -46,7 +46,7 @@ namespace ProviderTests
             Assert.IsFalse(target.HasPasswordAsync(user).Result);
 
             var hash = "stupid or liar";
-            target.SetPasswordHashAsync(user, hash);
+            target.SetPasswordHashAsync(user, hash).Wait();
             Assert.IsTrue(target.HasPasswordAsync(user).Result);
         }
         [TestMethod]
