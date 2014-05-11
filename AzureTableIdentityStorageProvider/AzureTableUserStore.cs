@@ -148,7 +148,11 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
                     .Take(1);
             try
             {
-                return table.ExecuteQuery(query).FirstOrDefault() as T;
+                var result = table.ExecuteQuery(query).FirstOrDefault() as T;
+                if (result == null)
+                    return null;
+                result.EnsureETagSet();
+                return result;
             }
             catch (StorageException ex)
             {
@@ -177,7 +181,11 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
 
             try
             {
-                return table.ExecuteQuery(userNameQuery).FirstOrDefault();
+                var result = table.ExecuteQuery(userNameQuery).FirstOrDefault();
+                if (result == null)
+                    return null;
+                result.EnsureETagSet();
+                return result;
             }
             catch (StorageException ex)
             {
@@ -200,7 +208,7 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
             if (string.IsNullOrWhiteSpace(user.RowKey))
                 throw new ArgumentException("User Id not set", "user");
             user.EnsureETagSet();
-            var op = TableOperation.Replace(user);
+            var op = TableOperation.InsertOrReplace(user);
             try
             {
                 user.PartitionKey = GetPartitionKeyByUserName(user.UserName);
