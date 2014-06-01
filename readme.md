@@ -12,7 +12,8 @@ I'm keeping the above line in this section until I can actually get the project 
 One step closer.  User and user logins appear to be working correctly now.  Not sure about other parts (e.g., claims).
 
 ##Latest commit notes
-I'm using roles now, and I'm getting some weird Precondition Failed errors when Identity is updating the user after adding a role.  Not sure what's going on, so I'm tweaking the process.  
+Minor refactoring of EnsureEtagSet.  Refactored the role store to make interface implementations override-able, and to make it easier to specify the partition key.  Updated referenced packages for Identity and Storage.
+Unfortunately, due to the interface for the role store, there isn't any simple way to generate the partition key based on data passed into interface methods.  But for almost all applications there will be a finite number of roles, so this shouldn't impact performance any.
 
 ##Version history
 (Version histories are the file version, which matches the major/minor for the assembly version)  
@@ -24,7 +25,8 @@ I'm using roles now, and I'm getting some weird Precondition Failed errors when 
 * 1.3.1: Password hashing method assumed the user existed and needed to be updated; fixed
 * 1.3.2: User login failed for Google because their provider key sucks at Azure
 * 1.3.3: FindByNameAsync now performs case-insensitive searches
-* 1.3.4: Trying to fix some Precondition errors on update relating to users and roles
+* 1.3.4: Trying to fix some Precondition errors on update relating to users and roles (successful)
+* 1.3.5: EnsureEtagset is now generic, returns the entity instead of void.  Refactored the Role store for easy overrides, partition key values.
 
 ##Previous commit notes
 ###1.1
@@ -51,3 +53,5 @@ I finally got my error logging working on my website, so I was able to track dow
 Quickly learned that Azure Storage queries are *case insensitive*, which can cause a situation where two users can have the same name, but only if they use different casing.  As user names MUST BE distinct in ASP.NET Identity (ugh), this results in the unwanted situation where users can impersonate others easier by using similar names that differ only by case.  If names were not required to be distinct, it would be known that different users can share the same user name, and therefore this wouldn't be an issue.  Unfortunately, it is.
 
 I also got rid of some build warnings.  Yay.
+###1.3.4 
+I'm using roles now, and I'm getting some weird Precondition Failed errors when Identity is updating the user after adding a role.  Not sure what's going on, so I'm tweaking the process.  Update: was successful.

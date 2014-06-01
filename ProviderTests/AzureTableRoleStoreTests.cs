@@ -13,11 +13,11 @@ namespace ProviderTests
     [TestClass]
     public class AzureTableRoleStoreTests
     {
-        private AzureTableRoleStore Target()
+        private AzureTableRoleStore<AzureTableRole> Target()
         {
             //TODO:  Figure out why TestInitialize is being ignored :/
             UtilsLol.DeleteTableLol(AzureTableRoleStore.DefaultTableName);
-            return new AzureTableRoleStore(Properties.Settings.Default.TestTableConnectionString);
+            return new AzureTableRoleStore<AzureTableRole>(Properties.Settings.Default.TestTableConnectionString);
         }
 
         [TestMethod]

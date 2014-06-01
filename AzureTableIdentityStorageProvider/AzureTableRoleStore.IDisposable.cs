@@ -8,7 +8,7 @@ namespace StateStreetGang.AspNet.Identity.AzureTable
 {
 
 
-    public partial class AzureTableRoleStore
+    public partial class AzureTableRoleStore<T>
     {
         #region IDisposable pattern
 
